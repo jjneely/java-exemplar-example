@@ -31,6 +31,7 @@ import io.prometheus.client.Histogram;
 import io.prometheus.client.Summary;
 import io.prometheus.client.exporter.HTTPServer;
 import io.opentelemetry.api.trace.Span;
+import io.prometheus.client.exemplars.ExemplarConfig;
 // End raw Prometheus Client Library dependancies.
 
 @Component
@@ -60,6 +61,7 @@ public class Scheduler {
     logger.info("This is an INFO message");
     logger.warn("This is a WARN message");
     logger.error("This is an ERROR message");
+    logger.error("Exemplars enabled: {}", ExemplarConfig.isExemplarsEnabled());
 
     // Counter vs. gauge, summary vs. histogram
     // https://prometheus.io/docs/practices/instrumentation/#counter-vs-gauge-summary-vs-histogram

@@ -1,0 +1,16 @@
+version: '3.7'
+services:
+  custom-metrics-demo:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        APP_VERSION: ${APP_VERSION}
+        OTEL_AGENT_VERSION: 1.9.1
+    image: ${CONTAINER_TEST_IMAGE}
+    environment:
+      - JAVA_OPTS=-XX:MaxRAMPercentage=75.0
+    ports:
+      - "8080:8080"
+    volumes:
+      - /tmp

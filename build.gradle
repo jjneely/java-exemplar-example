@@ -1,0 +1,85 @@
+plugins {
+    id 'org.springframework.boot' version '2.5.4'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
+    id 'de.undercouch.download' version '4.1.1'
+}
+
+group = 'jneely'
+version = '0.0.2'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'net.logstash.logback:logstash-logback-encoder:6.5'
+	compileOnly 'org.projectlombok:lombok:1.18.20'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	// runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+	annotationProcessor 'org.projectlombok:lombok:1.18.20'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+
+    // Prometheus Client Library dependancies.  Used only for comparision
+    // and NOT NEEDED for Micrometer insturmentation.
+    implementation 'io.prometheus:simpleclient:0.14.1'
+    implementation 'io.prometheus:simpleclient_hotspot:0.14.1'
+    implementation 'io.prometheus:simpleclient_httpserver:0.14.1'
+    implementation 'io.prometheus:simpleclient_tracer_otel:0.14.1'
+    implementation 'io.prometheus:simpleclient_tracer_otel_agent:0.14.1'
+    implementation platform("io.opentelemetry:opentelemetry-bom:${project['otel-agent.version']}")
+    implementation('io.opentelemetry:opentelemetry-api')
+    // End raw Prometheus Client Library dependancies
+}
+
+test {
+	useJUnitPlatform()
+}
+
+def agentPath = project.buildDir.toString() + "/otel/opentelemetry-javaagent-all-${project['otel-agent.version']}.jar"
+
+bootRun {
+    // Before running, download the opentelemetry-java-instrumentation agent
+    dependsOn("downloadAgent")
+
+    jvmArgs = [
+        // Set the opentelemetry-java-instrumentation agent as the javaagent
+        "-javaagent:${agentPath}",
+
+        // Opentelemetry's agent appends to the class path which produces a
+        // wanring about class sharing.
+        "-Xshare:off",
+
+        "-Dotel.traces.exporter=logging",
+        "-Dotel.metrics.exporter=none",
+    ]
+
+    // Additional configuration using standard autoconfiguration environment variables defined at:
+    // https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure
+    environment([
+        "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:4317",
+        "OTEL_RESOURCE_ATTRIBUTES": "service.name=custom-metrics-demo",
+        "OTEL_LOG_LEVEL": "debug",
+    ])
+}
+
+// If we just build the Jar, also create the Otel Agent Jar
+build.dependsOn("downloadAgent")
+
+// Download the opentelemetry java agent and put it in the build directory
+task downloadAgent(type: Download) {
+    src "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v${project['otel-agent.version']}/opentelemetry-javaagent.jar"
+    dest agentPath
+    overwrite false
+}

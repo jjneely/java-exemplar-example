@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+<property resource="application.properties" />
+<property name="STE_EXCLUSIONS" value="\$\$FastClassByCGLIB\$\$,\$\$EnhancerBySpringCGLIB\$\$,^sun\.reflect\..*\.invoke,^com\.sun\.,^sun\.net\.,^net\.sf\.cglib\.proxy\.MethodProxy\.invoke,^org\.springframework\.cglib\.,^org\.springframework\.transaction\.,^org\.springframework\.validation\.,^org\.springframework\.app\.,^org\.springframework\.aop\.,^java\.lang\.reflect\.Method\.invoke,^org\.springframework\.ws\..*\.invoke,^org\.springframework\.ws\.transport\.,^org\.springframework\.ws\.soap\.saaj\.SaajSoapMessage\.,^org\.springframework\.ws\.client\.core\.WebServiceTemplate\.,^org\.springframework\.web\.filter\.,^org\.apache\.tomcat\.,^org\.apache\.catalina\.,^org\.apache\.coyote\.,^java\.util\.concurrent\.ThreadPoolExecutor\.runWorker,^java\.lang\.Thread\.run$"/>
+<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+        <providers>
+            <timestamp>
+                <fieldName>time</fieldName>
+                <pattern>yyyy-MM-dd'T'HH:mm:ss.SSS'Z'</pattern>
+                <timeZone>UTC</timeZone>
+            </timestamp>
+            <pattern>
+                <omitEmptyFields>true</omitEmptyFields>
+                <pattern>{"srv":"%replace(${spring.application.name}){'.+UNDEFINED$','unknown-service'}","hos":"${HOSTNAME}"}</pattern>
+            </pattern>
+            <threadName>
+                <fieldName>thr</fieldName>
+            </threadName>
+            <logLevel/>
+            <loggerName>
+                <fieldName>logger</fieldName>
+                <shortenedLoggerNameLength>32</shortenedLoggerNameLength>
+            </loggerName>
+            <mdc>
+              <fieldName>mdc</fieldName>
+            </mdc>
+            <arguments/>
+            <message>
+                <fieldName>msg</fieldName>
+            </message>
+            <stackTrace>
+              <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                <maxDepthPerThrowable>30</maxDepthPerThrowable>
+                <maxLength>16384</maxLength>
+                <shortenedClassNameLength>32</shortenedClassNameLength>
+                <rootCauseFirst>true</rootCauseFirst>
+                <inlineHash>false</inlineHash>
+                <exclusions>${STE_EXCLUSIONS}</exclusions>
+              </throwableConverter>
+            </stackTrace>
+            <stackHash>
+              <exclusions>${STE_EXCLUSIONS}</exclusions>
+            </stackHash>
+        </providers>
+    </encoder>
+</appender>
+<logger name="jsonLogger" additivity="false" level="DEBUG">
+    <appender-ref ref="STDOUT"/>
+</logger>
+<root level="INFO">
+    <appender-ref ref="STDOUT"/>
+</root>
+</configuration>

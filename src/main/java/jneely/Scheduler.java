@@ -139,7 +139,8 @@ public class Scheduler {
     MDC.put("jid", "job-9876");                             // jid == job ID
     MDC.put("cid", "DB93F282-5559-49B8-9BBB-F24E0086FE14"); // cid == Customer ID
 
-    //testTraffic.increment();  // Count invocations
+    System.out.println("A valid=" + Span.current().getSpanContext().isValid());
+    //testTraffic.increment();  // Count invocationsP
     prometheusTraffic.inc();
     //testGauge.set(r);         // Set gauge to the random number/delay factor
     prometheusGauge.set(r);
@@ -166,6 +167,7 @@ public class Scheduler {
     logger.info("{}, {}", span.getSpanContext().getSpanId(), span.getSpanContext().getTraceId());
     logger.info("isAvailable: {}", io.prometheus.client.exemplars.tracer.otel.OpenTelemetrySpanContextSupplier.isAvailable());
     logger.info("isValid Span Context: {}", span.getSpanContext().isValid());
+    System.out.println("B valid=" + Span.current().getSpanContext().isValid());
 
     // Create the Event Record with high cardinality data
     logger.info("task complete {} {}", kv("random_int", r),

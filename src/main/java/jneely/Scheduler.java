@@ -165,6 +165,7 @@ public class Scheduler {
     prometheusHistogram.observeWithExemplar(sw.getTotalTimeSeconds(), "span_foo", "0xdeadbeef", "trace_bar", "DEADBEEF");
     logger.info("{}, {}", span.getSpanContext().getSpanId(), span.getSpanContext().getTraceId());
     logger.info("isAvailable: {}", io.prometheus.client.exemplars.tracer.otel.OpenTelemetrySpanContextSupplier.isAvailable());
+    logger.info("isValid Span Context: {}", span.getSpanContext().isValid());
 
     // Create the Event Record with high cardinality data
     logger.info("task complete {} {}", kv("random_int", r),

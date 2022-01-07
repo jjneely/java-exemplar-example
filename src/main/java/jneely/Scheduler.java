@@ -32,6 +32,7 @@ import io.prometheus.client.Summary;
 import io.prometheus.client.exporter.HTTPServer;
 import io.opentelemetry.api.trace.Span;
 import io.prometheus.client.exemplars.ExemplarConfig;
+import io.prometheus.client.hotspot.DefaultExports;
 // End raw Prometheus Client Library dependancies.
 
 @Component
@@ -84,6 +85,7 @@ public class Scheduler {
 
     // This code mimics the Micrometer meter setup using the raw Prometheus
     // Client Library.  Camparisons only!  Please insturment with Micrometer.
+    DefaultExports.initialize();
     prometheusGauge = io.prometheus.client.Gauge.build()
       .namespace("custommetricsdemo")
       .name("gauge")
@@ -160,7 +162,7 @@ public class Scheduler {
     //testTimer.record(milli, TimeUnit.MILLISECONDS);
     //testHistogram.record(milli, TimeUnit.MILLISECONDS);
     prometheusTimer.observe(sw.getTotalTimeSeconds());
-    prometheusHistogram.observeWithExemplar(sw.getTotalTimeSeconds(), "span_foo", span.getSpanContext().getSpanId(), "trace_bar", span.getSpanContext().getTraceId());
+    prometheusHistogram.observeWithExemplar(sw.getTotalTimeSeconds(), "span_foo", "0xdeadbeef", "trace_bar", "DEADBEEF");
     logger.info("{}, {}", span.getSpanContext().getSpanId(), span.getSpanContext().getTraceId());
     logger.info("isAvailable: {}", io.prometheus.client.exemplars.tracer.otel.OpenTelemetrySpanContextSupplier.isAvailable());
 

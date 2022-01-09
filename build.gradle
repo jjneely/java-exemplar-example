@@ -34,10 +34,9 @@ dependencies {
     // Prometheus Client Library dependancies.  Used only for comparision
     // and NOT NEEDED for Micrometer insturmentation.
     implementation 'io.prometheus:simpleclient:0.14.1'
+    implementation 'io.prometheus:simpleclient_common:0.14.1'
     implementation 'io.prometheus:simpleclient_hotspot:0.14.1'
     implementation 'io.prometheus:simpleclient_httpserver:0.14.1'
-    implementation 'io.prometheus:simpleclient_tracer_otel:0.14.1'
-    implementation 'io.prometheus:simpleclient_tracer_otel_agent:0.14.1'
     implementation platform("io.opentelemetry:opentelemetry-bom:${project['otel-agent.version']}")
     implementation('io.opentelemetry:opentelemetry-api')
     // End raw Prometheus Client Library dependancies

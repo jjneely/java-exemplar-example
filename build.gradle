@@ -25,21 +25,17 @@ dependencies {
 	implementation 'net.logstash.logback:logstash-logback-encoder:6.5'
 	compileOnly 'org.projectlombok:lombok:1.18.20'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	// runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 	annotationProcessor 'org.projectlombok:lombok:1.18.20'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 
-    // Prometheus Client Library dependancies.  Used only for comparision
-    // and NOT NEEDED for Micrometer insturmentation.
     implementation 'io.prometheus:simpleclient:0.14.1'
     implementation 'io.prometheus:simpleclient_common:0.14.1'
     implementation 'io.prometheus:simpleclient_hotspot:0.14.1'
     implementation 'io.prometheus:simpleclient_httpserver:0.14.1'
     implementation platform("io.opentelemetry:opentelemetry-bom:${project['otel-agent.version']}")
     implementation('io.opentelemetry:opentelemetry-api')
-    // End raw Prometheus Client Library dependancies
 }
 
 test {
@@ -69,7 +65,6 @@ bootRun {
     environment([
         "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:4317",
         "OTEL_RESOURCE_ATTRIBUTES": "service.name=custom-metrics-demo",
-        "OTEL_LOG_LEVEL": "debug",
     ])
 }
 
